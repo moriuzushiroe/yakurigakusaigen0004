@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>○×クイズアプリ</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 正しい文と誤った文の入力フォーム -->
+  <div id="inputScreen">
+    <h2>正しい文と誤った文の入力</h2>
+    <textarea id="correctInput" rows="10" cols="50" placeholder="正しい文章を1行ずつ入力"></textarea>
+    <textarea id="incorrectInput" rows="10" cols="50" placeholder="誤った文章を1行ずつ入力"></textarea>
+    <button onclick="loadQuestions()">問題を作成</button>
+  </div>
+
+  <!-- クイズ表示画面 -->
+  <div id="quizScreen" class="hidden">
+    <div id="questionContainer">
+      <p id="questionText"></p>
+      <input type="checkbox" id="bookmarkCheckbox"> チェック
+    </div>
+    <div id="optionsContainer">
+      <!-- 8通りの選択肢をボタンで表示 -->
+    </div>
+    <button onclick="prevQuestion()">前へ</button>
+    <button onclick="nextQuestion()">次へ</button>
+    <button onclick="toggleExplanation()">解説を見る</button>
+    <button onclick="toggleCheckedQuestions()">チェック済みのみ表示</button>
+    <p id="scoreDisplay">正解率: 0%</p>
+    <div id="explanationContainer" class="hidden">
+      <h3>解説</h3>
+      <p id="explanationText"></p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
