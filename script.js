@@ -119,6 +119,13 @@ function displayQuestion() {
   document.getElementById('bookmarkCheckbox').checked = checkedQuestions.has(currentQuestionIndex);
   updateScore();
 
+function toggleBookmark() {
+  if (checkedQuestions.has(currentQuestionIndex)) {
+    checkedQuestions.delete(currentQuestionIndex);
+  } else {
+    checkedQuestions.add(currentQuestionIndex);
+  }
+}
   // 残りの問題数を表示
   document.getElementById('progressDisplay').textContent = 
     `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
