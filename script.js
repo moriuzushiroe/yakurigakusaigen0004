@@ -118,8 +118,8 @@ function displayQuestion() {
   generateOptions(q.correctPattern);
   document.getElementById('bookmarkCheckbox').checked = checkedQuestions.has(currentQuestionIndex);
   updateScore();
-  
-　// 残りの問題数を表示
+
+  // 残りの問題数を表示
   document.getElementById('progressDisplay').textContent = 
     `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
 }
