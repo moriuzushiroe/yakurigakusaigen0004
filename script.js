@@ -26,28 +26,67 @@ function loadQuestions() {
   displayQuestion();
 }
 
-// 問題生成関数（正1つ、誤2つで構成）
+// 問題生成関数
 function generateQuestions() {
   questions = [];
-  const allStatements = [...correctStatements, ...incorrectStatements];
 
-  for (let i = 0; i < 10; i++) {
-    let sampled = [];
-    while (sampled.length < 3) {
-      const candidate = getRandomItem(allStatements);
-      if (!sampled.includes(candidate)) {
-        sampled.push(candidate);
-      }
+  const usedCorrect = new Set();
+  const usedIncorrect = new Set();
+
+  const allStatements = correctStatements.map((s, i) => ({ text: s, isCorrect: true, index: i }))
+    .concat(incorrectStatements.map((s, i) => ({ text: s, isCorrect: false, index: i })));
+
+  // 出題数 = 正しい文の数
+  for (let i = 0; i < correctStatements.length; i++) {
+    // ランダムに3つ選ぶ
+    const selected = [];
+    const pool = [...allStatements];
+
+    while (selected.length < 3 && pool.length > 0) {
+      const idx = Math.floor(Math.random() * pool.length);
+      selected.push(pool.splice(idx, 1)[0]);
     }
 
-    const statements = shuffle(sampled);
-    const correctPattern = statements.map(s => correctStatements.includes(s) ? '○' : '×').join('');
+    // 使用履歴を記録
+    selected.forEach(s => {
+      if (s.isCorrect) usedCorrect.add(s.index);
+      else usedIncorrect.add(s.index);
+    });
+
+    const pattern = selected.map(s => s.isCorrect ? '○' : '×').join('');
+    const shuffledTexts = selected.map(s => s.text);
 
     questions.push({
-      statements,
-      correctPattern
+      statements: shuffledTexts,
+      correctPattern: pattern,
+      explanationIndexes: selected.map(s => s.isCorrect ? s.index : null) // 解説用
     });
   }
+
+  // 使用されていない文がある場合、それをランダムな問題に追加（重複可）
+  const unusedCorrect = [];
+  for (let i = 0; i < correctStatements.length; i++) {
+    if (!usedCorrect.has(i)) unusedCorrect.push({ text: correctStatements[i], isCorrect: true, index: i });
+  }
+
+  const unusedIncorrect = [];
+  for (let i = 0; i < incorrectStatements.length; i++) {
+    if (!usedIncorrect.has(i)) unusedIncorrect.push({ text: incorrectStatements[i], isCorrect: false, index: i });
+  }
+
+  [...unusedCorrect, ...unusedIncorrect].forEach(extra => {
+    const q = questions[Math.floor(Math.random() * questions.length)];
+    const replaceIndex = Math.floor(Math.random() * 3);
+    q.statements[replaceIndex] = extra.text;
+    const oldExplanation = q.explanationIndexes[replaceIndex];
+    q.explanationIndexes[replaceIndex] = extra.isCorrect ? extra.index : null;
+    const patternArray = q.statements.map((text, idx) =>
+      correctStatements.includes(text) ? '○' : '×'
+    );
+    q.correctPattern = patternArray.join('');
+  });
+
+  questions = shuffle(questions);
 }
 
 // ランダム選択
@@ -72,6 +111,10 @@ function displayQuestion() {
   generateOptions(q.correctPattern);
   document.getElementById('bookmarkCheckbox').checked = checkedQuestions.has(currentQuestionIndex);
   updateScore();
+  
+　// 残りの問題数を表示
+  document.getElementById('progressDisplay').textContent = 
+    `問題 ${currentQuestionIndex + 1} / ${questions.length}`;
 }
 
 // 選択肢生成
