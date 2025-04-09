@@ -15,14 +15,21 @@ function loadQuestions() {
   correctStatements = correctInput.split('\n').map(s => s.trim()).filter(s => s);
   incorrectStatements = incorrectInput.split('\n').map(s => s.trim()).filter(s => s);
 
-  if (correctStatements.length < 1 || incorrectStatements.length < 2) {
-    alert('正しい文章を1つ以上、誤った文章を2つ以上入力してください。');
+  if (correctStatements.length === 0 || incorrectStatements.length === 0) {
+    alert('正しい文章と誤った文章をそれぞれ入力してください。');
     return;
   }
 
   generateQuestions();
+
+  // クイズ画面表示
   document.getElementById('inputScreen').classList.add('hidden');
   document.getElementById('quizScreen').classList.remove('hidden');
+
+  // 問題番号リセット
+  currentQuestionIndex = 0;
+  document.getElementById('progressDisplay').textContent = `問題 0 / ${questions.length}`;
+
   displayQuestion();
 }
 
